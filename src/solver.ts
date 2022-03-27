@@ -1,7 +1,7 @@
-import Maze, {MazeStructures, NodePosition} from 'maze';
-import Node from 'helpers/node';
-import PriorityQueue from 'helpers/priorityQueue';
-import sleep from 'utils/sleep';
+import Maze, {MazeStructures, NodePosition} from './maze';
+import Node from './helpers/node';
+import PriorityQueue from './helpers/priorityQueue';
+import sleep from './utils/sleep';
 
 export default class MazeSolver {
   entry: Node;

@@ -1,4 +1,4 @@
-import Maze, {MazeStructures, NodePosition} from 'maze';
+import Maze, {MazeStructures, NodePosition} from '../maze';
 
 export default class Node {
   constructor(
