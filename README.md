@@ -1,6 +1,6 @@
 # Maze Solver 🤖
 
-Generate and solve a maze on terminal.
+Generate and solve a maze on terminal.  
 ![Demo](https://media.giphy.com/media/LBuZOFvcshEGbYD9Kz/giphy.gif)
 
 ## Installation
