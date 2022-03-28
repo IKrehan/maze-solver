@@ -14,7 +14,9 @@ export default class MazeSolver {
     this.exit = new Node(this.maze, maze.exit);
   }
 
-  async solve() {
+  async solve(): Promise<{solution?: Node[], duration: number}> {
+    const startTime = performance.now();
+
     const queue = new PriorityQueue();
     queue.enqueue(this.entry);
 
@@ -23,7 +25,9 @@ export default class MazeSolver {
       await this.updateNode(current, MazeStructures.CHECKED);
 
       if (current.position.toString() === this.exit.position.toString()) {
-        return await this.findPath(current);
+        const solution = await this.findPath(current);
+        const duration = this.elapsedTime(startTime);
+        return {solution, duration};
       }
 
       for (const next of current.getNeighbours()) {
@@ -31,16 +35,22 @@ export default class MazeSolver {
         next.setData(g, h, f);
 
         if (queue.contains(next) && next.g > queue.front().g) {
-          return;
+          continue;
         }
 
         await this.updateNode(next, MazeStructures.NEXT);
         queue.enqueue(next);
       }
     }
+
+    const duration = this.elapsedTime(startTime);
+    return {duration};
   }
 
-  calculateNodeData(current: Node, next: Node) {
+  calculateNodeData(
+      current: Node,
+      next: Node,
+  ): {g: number, h: number, f: number, } {
     const g = current.g + 1;
     const h = this.heuristic(
         next.position,
@@ -50,7 +60,7 @@ export default class MazeSolver {
     return {g, h, f: g + h};
   }
 
-  async findPath(node: Node) {
+  async findPath(node: Node): Promise<Node[]> {
     const path = [];
     let end: Node | null = node;
 
@@ -64,12 +74,16 @@ export default class MazeSolver {
     return path;
   }
 
-  async updateNode(node: Node, structure: MazeStructures) {
+  async updateNode(node: Node, structure: MazeStructures): Promise<void> {
     this.maze.updateCell(node.position, structure);
     this.delaySteps && await sleep(90);
   }
 
-  heuristic(a: NodePosition, b:NodePosition) {
+  heuristic(a: NodePosition, b:NodePosition): number {
     return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2;
+  }
+
+  elapsedTime(time: number): number {
+    return ((performance.now() - time)/1000);
   }
 }
