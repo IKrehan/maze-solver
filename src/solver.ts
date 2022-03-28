@@ -80,7 +80,7 @@ export default class MazeSolver {
   }
 
   heuristic(a: NodePosition, b:NodePosition): number {
-    return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2;
+    return Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
   }
 
   elapsedTime(time: number): number {
