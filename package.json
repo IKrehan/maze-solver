@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rm -rf dist && yarn tsc",
     "start": "yarn build && node -r tsconfig-paths/register dist/index.js",
+    "start:performance": "yarn build && node -r tsconfig-paths/register dist/performanceTest.js",
     "start:dev": "tsnd --respawn --transpile-only -r tsconfig-paths/register src/index.ts"
   },
   "devDependencies": {
