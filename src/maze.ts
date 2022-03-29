@@ -1,6 +1,6 @@
 import shuffleArray from './utils/shuffleArray';
 import randomNumber from './utils/randomNumber';
-const {columns, rows} = process.stdout;
+import colorful from './utils/colorful';
 
 export enum MazeStructures {
   WALL,
@@ -12,21 +12,32 @@ export enum MazeStructures {
   NEXT
 }
 
+interface MazeBuilderOptions {
+  width: number;
+  height: number;
+  displayMaze?: boolean;
+}
+
 export type NodePosition = [number, number]
 
 export default class MazeBuilder {
+  width: number;
+  height: number;
   cols: number;
   rows: number;
   maze: MazeStructures[][];
   entry: NodePosition;
   exit: NodePosition;
+  displayMaze: boolean;
 
-  constructor(
-    public width = Math.floor(columns/4)-1,
-    public height = Math.floor(rows/2)-1,
-  ) {
+  constructor({
+    width,
+    height,
+    displayMaze=true,
+  }: MazeBuilderOptions) {
     this.width = width;
     this.height = height;
+    this.displayMaze = displayMaze;
 
     this.cols = 2 * this.width + 1;
     this.rows = 2 * this.height + 1;
@@ -73,8 +84,6 @@ export default class MazeBuilder {
 
     // start partitioning
     this.partition(1, this.height - 1, 1, this.width - 1);
-
-    this.display();
   }
 
   getCell(pos: NodePosition): MazeStructures {
@@ -234,20 +243,22 @@ export default class MazeBuilder {
   }
 
   display() {
+    if (!this.displayMaze) return;
+
+    const colors = {
+      [MazeStructures.WALL]: () => colorful('bgWhite', '..', true),
+      [MazeStructures.ENTRY]: () => colorful('bgGreen', '..', true),
+      [MazeStructures.EXIT]: () => colorful('bgRed', '..', true),
+      [MazeStructures.PATH]: () => colorful('default', '..', true),
+      [MazeStructures.CHECKED]: () => colorful('bgMagenta', '..', true),
+      [MazeStructures.WALKED]: () => colorful('bgBlue', '..', true),
+      [MazeStructures.NEXT]: () => colorful('bgYellow', '..', true),
+    };
+
     console.clear();
     this.maze.forEach((row) => {
       row.forEach((cell) => {
-        const colors = {
-          [MazeStructures.WALL]: '\x1b[47m \x1b[8m',
-          [MazeStructures.ENTRY]: '\x1b[42m \x1b[8m',
-          [MazeStructures.EXIT]: '\x1b[41m \x1b[8m',
-          [MazeStructures.PATH]: '\x1b[48m \x1b[8m',
-          [MazeStructures.CHECKED]: '\x1b[45m \x1b[8m',
-          [MazeStructures.WALKED]: '\x1b[44m \x1b[8m',
-          [MazeStructures.NEXT]: '\x1b[43m \x1b[8m',
-        };
-
-        process.stdout.write(colors[cell] + cell.toString() + '\x1b[0m');
+        process.stdout.write(colors[cell]());
       });
 
       process.stdout.write('\n');
